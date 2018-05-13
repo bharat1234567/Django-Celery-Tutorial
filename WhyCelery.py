@@ -24,7 +24,7 @@ print(end-start)
 
 
 def runmewithwait(i):
-    time.sleep(1)
+    time.sleep(1) # it will wait 1 sec before printing the no. let this one sec wait corresponds to anything I/O or processing time..
     print(i)
 
 
@@ -35,14 +35,13 @@ end = time.time()
 print(end - start)
 
 # It almost took 20 secs just to print from 1 to 20 as the process is linear...
-# here until n unless cpu prints 1 , it won't go ahead and print 2 ,, it will wait for definite time
+# here until-n-unless cpu prints 1 , it won't go ahead and print 2 ,, it will wait for definite time
 
 # say I don't bother how and in which order they are getting printed , I just want that they should get printed.. thats it!!
 # i.e. we are making this task asynchronous!
 
-# so basically by using celery this waiting time of 1 sec we have given can be utilized by celery!! Lets see how we can actually do that!!
+# so basically by using celery this waiting time of 1 sec we have given can be utilized!! Lets see how we can actually do that!!
 
-# if we make it 100 it will take 100+ secs to run , lets see how much time it will be taken by celery!!
 
 # go to readme.txt file and see how to install broker, start it and check its working fine. broker is nothing but a queue where async tasks will be kept by workers to pick then and
 #execute them

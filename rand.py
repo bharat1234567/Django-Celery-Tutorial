@@ -16,4 +16,8 @@ def runme(i):
 
 # what is a task?
 # its nothing but a function that will be taken by celery workers to execute asnychronously!
-# will go into details latr!
+
+# When you send a task message in Celery, that message won’t contain any source code, but only the name of the task you want to execute. This works similarly to how host names work
+# on the internet: every worker maintains a mapping of task names to their actual functions, called the task registry.
+# Whenever you define a task, that task will also be added to the local registry
+
