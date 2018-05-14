@@ -317,5 +317,94 @@ Tasks are shared by default, but if the shared argument to the task decorator is
 
 Evaluate all pending task decorators.
 
-Make sure all tasks are bound to the current app.
+Make sure all tasks are bound to the current app.---------------------------------------------------------------------------------------------------------------------------------
+
+TASKS
+--------
+-----------
+
+create a task from any callable by using the task() decorator
+
+we can set many options for task as:
+
+@app.task(serializer='json')
+
+@app.task(name='name of the task') # best practice is name = module_name.task_name
+You can set this name manually, or a name will be automatically generated using the module and class name.
+
+
+
+Task.max_retries
+Only applies if the task calls self.retry or if the task is decorated with the autoretry_for argument.
+
+he maximum number of attempted retries before giving up. If the number of retries exceeds this value a
+
+MaxRetriesExceededError exception will be raised.
+
+You have to call retry() manually, as it won’t automatically retry on exception..
+
+The default is 3. A value of None will disable the retry limit and the task will retry forever until it succeeds.
+
+
+Say there are some errors which are bound to come for this we can use :
+
+Task.throws
+Optional tuple of expected error classes that shouldn’t be regarded as an actual error.
+
+Errors in this list will be reported as a failure to the result backend, but the worker won’t log the event as an error,
+and no traceback will be included.
+
+ex:
+
+@task(throws=(KeyError, HttpNotFound)):
+def get_foo():
+    something()
+
+now here HttpNotFound is an expected error: so it will be logged with severity = INFO, traceback included.
+It won't be logged as error
+
+
+Task.default_retry_delay
+Default time in seconds before a retry of the task should be executed. Can be either int or float. Default is a three minute delay.
+
+
+
+Task.rate_limit
+Set the rate limit for this task type (limits the number of tasks that can be run in a given time frame). Tasks will still
+complete when a rate limit is in effect, but it may take some time before it’s allowed to start.
+
+If this is None no rate limit is in effect. If it is an integer or float, it is interpreted as “tasks per second”.
+
+The rate limits can be specified in seconds, minutes or hours by appending “/s”, “/m” or “/h” to the value. Tasks will be evenly distributed over the specified time frame.
+
+Example: “100/m” (hundred tasks a minute). This will enforce a minimum delay of 600ms between starting two tasks on the same worker instance.
+
+Default is the task_default_rate_limit setting: if not specified means rate limiting for tasks is disabled by default.
+
+Note that this is a per worker instance rate limit, and not a global rate limit.
+
+*******To enforce a global rate limit (e.g., for an API with a maximum number of requests per second), you must restrict to a given queue.********************
+suppose celery workers are calling an api for which we have like 5 requests per second max limit
+and we have created a worker --> 4 processes for each core
+now they should know that 5 req are sent already and till 1 sec completes we can't request more!
+so we need to set this at queue level.
+
+Task.time_limit
+The hard time limit, in seconds, for this task. When not set the workers default is used.
+
+Task.soft_time_limit
+The soft time limit for this task. When not set the workers default is used.
+
+Task.ignore_result
+Don’t store task state. Note that this means you can’t use AsyncResult to check if the task is ready, or get its return value.
+
+Task.store_errors_even_if_ignored
+If True, errors will be stored even if the task is configured to ignore results.
+
+Task.serializer
+A string identifying the default serialization method to use. Defaults to the task_serializer setting. Can be pickle, json,
+ yaml, or any custom serialization methods that have been registered with kombu.serialization.registry.
+
+
+
 

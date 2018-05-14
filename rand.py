@@ -21,3 +21,10 @@ def runme(i):
 # on the internet: every worker maintains a mapping of task names to their actual functions, called the task registry.
 # Whenever you define a task, that task will also be added to the local registry
 
+
+@app.task(bind=True)
+def dump_context(self, x, y):
+    print('Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r}'.format(
+            self.request))
+    print(self.request)
+

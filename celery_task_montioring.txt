@@ -1,0 +1,44 @@
+
+Task Request
+app.Task.request contains information and state related to the currently executing task.
+
+The request defines the following attributes:
+
+id:	The unique id of the executing task.
+group:	The unique id of the task’s group, if this task is a member.
+chord:	The unique id of the chord this task belongs to (if the task is part of the header).
+correlation_id:	Custom ID used for things like de-duplication.
+... there are similar other attributes!!
+
+
+do this, for any task which we want to track, make its bind= Trie and supply self as a parameter to the task:
+
+---------------------------------------------------------------------------------------
+@app.task(bind=True)
+def dump_context(self, x, y):
+    print(self.request)
+---------------------------------------------------------------------------------------
+
+It will print this:
+
+<Context: {'lang': 'py',
+'retries': 0,
+'_protected': 1,
+'task': 'rand.dump_context',
+'id': '40c5e90a-9085-4d70-ab76-17f1b536e897',
+'chord': None,
+ 'timelimit': [None, None],
+ 'correlation_id': '40c5e90a-9085-4d70-ab76-17f1b536e897',
+ 'chain': None, 'args': [1, 2],
+ 'is_eager': False,
+ 'argsrepr': '(1, 2)',
+ 'parent_id': None,
+ 'errbacks': None,
+ 'delivery_info': {'routing_key': 'celery', 'priority': 0, 'exchange': '', 'redelivered': False}, 'expires': None, 'eta': None,
+ 'hostname': 'asdda', 'callbacks': None, 'group': None,
+  'origin': 'someting", 'kwargs': {}, 'root_id': '40c5e90a-9085-4d70-ab76-17f1b536e897',
+   'kwargsrepr': '{}', 'called_directly': False, 'reply_to': '2b22b589-225f-30b8-87de-52cf22ec326f'}
+>
+
+so basically for a task we can set these retries , timelimit etc and can track it if they are set properly or not using this.
+

@@ -43,7 +43,29 @@ In development you can set the CELERY_TRACE_APP environment variable to raise an
 $ CELERY_TRACE_APP=1 celery worker -l info
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-http://docs.celeryproject.org/en/latest/userguide/application.html
-http://docs.celeryproject.org/en/latest/reference/celery.app.task.html#celery.app.task.Task -- task api ref
+
+A task that blocks indefinitely may eventually stop the worker instance from doing any other work.
+
+If you task does I/O then make sure you add timeouts to these operations, like adding a timeout to a web request using the
+requests library:
+
+connect_timeout, read_timeout = 5.0, 30.0
+response = requests.get(URL, timeout=(connect_timeout, read_timeout))
+
+Time limits are convenient for making sure all tasks return in a timely manner, but a time limit event will actually kill the
+process by force so only use them to detect cases where you haven’t used manual timeouts yet.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The default prefork pool scheduler is not friendly to long-running tasks, so if you have tasks that run for minutes/hours make
+sure you enable the -Ofair command-line argument to the celery worker.
+See Prefork pool prefetch settings for more information, and for the best performance route long-running and short-running tasks
+to dedicated workers (Automatic routing).
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+@app.task(name='name of the task') # best practice is name = module_name.task_name
+You can set this name manually, or a name will be automatically generated using the module and class name.
+
+-------------------------------------------------------------------------------------------------------------------------------------
 
 
