@@ -266,7 +266,7 @@ Finalization of the app happens either explicitly by calling app.finalize() – 
 
 What is difference between task and shared task?
 
-There is a difference between @task(shared=True) and @shared_task
+There is a difference between @task(shared=True) <If we turn this shared to false then task will be private to the app> and @shared_task
 
 
 The task decorator will share tasks between apps by default so that if you do:
@@ -306,4 +306,16 @@ in the current_app:
 This makes the @shared_task decorator useful for libraries and reusable apps,
 since they will not have access to the app of the user.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+What does finalizing the app will do?
+
+Finalizing the object will:
+
+Copy tasks that must be shared between apps
+
+Tasks are shared by default, but if the shared argument to the task decorator is disabled, then the task will be private to the app it’s bound to.
+
+Evaluate all pending task decorators.
+
+Make sure all tasks are bound to the current app.
 

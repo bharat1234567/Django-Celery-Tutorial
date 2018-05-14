@@ -1,0 +1,49 @@
+from celery.task import Task   # << OLD Task base class.
+
+from celery import Task        # << NEW base class.
+The new base class is recommended even if you use the old module-based API.
+
+---------------------------------------------------------------------------------------------------------------------------------------
+While it’s possible to depend on the current app being set, the best practice is to always pass the app instance around to anything that needs it.
+ call this the “app chain”, since it creates a chain of instances depending on the app being passed.
+
+The following example is considered bad practice:
+
+############################################## This is bad practice
+from celery import current_app
+
+class Scheduler(object):
+
+    def run(self):
+        app = current_app
+###############################################
+Instead it should take the app as an argument:
+
+
+########################################## Good practice
+class Scheduler(object):
+
+    def __init__(self, app):
+        self.app = app
+###########################################
+
+Internally Celery uses the celery.app.app_or_default() function so that everything also works in the module-based compatibility API
+
+
+######################################################## Allows module based api compatibility
+from celery.app import app_or_default
+
+class Scheduler(object):
+    def __init__(self, app=None):
+        self.app = app_or_default(app)
+#######################################################
+
+In development you can set the CELERY_TRACE_APP environment variable to raise an exception if the app chain breaks:
+
+$ CELERY_TRACE_APP=1 celery worker -l info
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+http://docs.celeryproject.org/en/latest/userguide/application.html
+http://docs.celeryproject.org/en/latest/reference/celery.app.task.html#celery.app.task.Task -- task api ref
+
+
