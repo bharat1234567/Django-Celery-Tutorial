@@ -1,0 +1,13 @@
+Error:
+line 111, in __init__
+    raise ImproperlyConfigured(E_REDIS_MISSING.strip())
+celery.exceptions.ImproperlyConfigured: You need to install the redis library in order to use the Redis result store backend.
+
+occured when i was trying to get async result of a task
+
+solution:
+
+install redis library:
+
+pip install celery[redis]
+---------------------------------------------------------------------------------------------------------------------------------------

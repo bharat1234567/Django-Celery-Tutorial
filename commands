@@ -1,0 +1,30 @@
+
+celery -A  rand worker --loglevel=INFO
+
+To kill celery worker:
+                pkill celery
+
+To start redis:
+                redis-server
+
+
+running seperate tasks in seperate queue:
+-------------------------------------------
+first configure different tasks to different queue in apps configuration:
+
+app = Celery('tasks',broker='amqp://localhost/', backend='redis://localhost') #'redis://localhost:6379/0'
+app.conf.task_routes = {'task_1': {'queue': 'first_task_queue'}, 'task_2': {'queue': 'second_task_queue'}}
+
+celery -A  rand worker --loglevel=INFO -n worker1  -Q first_task_queue
+celery -A  rand worker --loglevel=INFO -n worker2  -Q second_task_queue
+
+here rand == file name where tasks are written
+worker is that we want to create a worker thread. there are others like beat etc
+--loglevel = Info --> celery worker should print Information any any log above information level like errors, critical failures.
+-n --> we are going to use a unique worker , after that we need to give it a name! Don't give 2 workers a same name!
+worker1 and worker2 -- are name of workers we have created.
+-Q -- these workers are going to look into a specific queue only for tasks to execute
+then comes the Queue name
+
+done! tasks will be executed by different workers executing from different queue!
+-------------------------------------------------------------------------------------------------------------------
